@@ -15,25 +15,30 @@ def getDataForSymbolList(symList, start, end):
         D[sym] = getDataForSymbol(sym, start, end)
     return D
 
-def formatForTraining(data, start, end, daysPerSet, gap=0):
-    total = 0
-    for i in range(len(data)):
-        total += len(data[i]) // (daysPerSet + gap + 1)
+def formatForTraining(data, start, end, daysPerSet):
+    total = len(data) * (len(data[list(data.keys())[0]]) - daysPerSet - 1)
     arr = np.zeros((total, 6 * daysPerSet))
-    setIdx = 0
-    for i in range(len(data)):
-        numSets = len(data[i]) // (daysPerSet + gap + 1)
-        for j in range(numSets):
-            for k in range(daysPerSet):
-                idx = setIdx * 6 * daysPerSet 
-                arr[idx] = data[i][j * (daysPerSet + gap + 1) + k]["High"]
-                arr[idx+1] = data[i][j * (daysPerSet + gap + 1) + k]["Low"]
-                arr[idx+2] = data[i][j * (daysPerSet + gap + 1) + k]["Open"]
-                arr[idx+3] = data[i][j * (daysPerSet + gap + 1) + k]["Close"]
-                arr[idx+4] = data[i][j * (daysPerSet + gap + 1) + k]["Adj. Close"]
-                arr[idx+5] = data[i][j * (daysPerSet + gap + 1) + k]["High"]
-            setIdx+=1
-    return arr
+    outputArr = np.zeros((total, 1))
+    curSet = 0
+    for sym in data:
+        for i in range(len(data[sym])- daysPerSet - 1):
+            idx = 0
+            for j in range(i, i + daysPerSet):
+                arr[curSet, idx] = data[sym]["Low"][j]
+                arr[curSet, idx+1] = data[sym]["Open"][j]
+                arr[curSet, idx+2] = data[sym]["Close"][j]
+                arr[curSet, idx+3] = data[sym]["Adj Close"][j]
+                arr[curSet, idx+4] = data[sym]["High"][j]
+                arr[curSet, idx+5] = data[sym]["Volume"][j]
+                idx+=6
+            outputArr[curSet, 0] = data[sym]["Adj Close"][j+1]   
+            curSet+=1
+    return arr, outputArr
+
+def createTrainingData(symList, start, end, daysPerSet):
+    data = getDataForSymbolList(symList, start, end)
+    x, y = formatForTraining(data, start, end, daysPerSet)
+    return x,y
 
 loadTest = False
 
