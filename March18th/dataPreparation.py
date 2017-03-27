@@ -3,7 +3,7 @@ import pandas_datareader.data as web   # Package and modules for importing data;
 import datetime
 import numpy as np
 
-numElements = 6
+numElements = 4
 
 def getDataForSymbol(sym, start, end):
     df = web.DataReader(sym, "yahoo", start, end) # returns a dataframe
@@ -27,10 +27,10 @@ def formatForTraining(data, start, end, daysPerSet):
             for j in range(i, i + daysPerSet):
                 arr[curSet, idx] = data[sym]["Low"][j]
                 arr[curSet, idx+1] = data[sym]["Open"][j]
-                arr[curSet, idx+2] = data[sym]["Close"][j]
-                arr[curSet, idx+3] = data[sym]["Adj Close"][j]
-                arr[curSet, idx+4] = data[sym]["High"][j]
-                arr[curSet, idx+5] = data[sym]["Volume"][j]
+                arr[curSet, idx+2] = data[sym]["Adj Close"][j]
+                arr[curSet, idx+3] = data[sym]["High"][j]
+                #arr[curSet, idx+4] = data[sym]["Close"][j]
+                #arr[curSet, idx+5] = data[sym]["Volume"][j]
                 idx+=numElements
             outputArr[curSet, 0] = data[sym]["Adj Close"][j+1]   
             curSet+=1
